@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AddIns engineering playbooks and DevSecOps knowledge maintained by Ravi Kumar Singh.">
+  <title>AddIns Knowledge | Ravi Singh</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js" defer></script>
+  <style>
+    :root {
+      --paper: #f4f1e9;
+      --paper-bright: #fbfaf6;
+      --ink: #17201d;
+      --muted: #63706a;
+      --line: #ccd1c8;
+      --forest: #1f5c48;
+      --forest-dark: #133f33;
+      --signal: #e6532f;
+      --blue: #2f6597;
+      --radius: 6px;
+      --shadow: 0 14px 34px rgba(23, 32, 29, 0.08);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; color: var(--ink); background: var(--paper); font-family: "Manrope", sans-serif; line-height: 1.65; }
+    body::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.35; background-size: 24px 24px; background-image: linear-gradient(to right, transparent 23px, rgba(31, 92, 72, 0.05) 24px), linear-gradient(to bottom, transparent 23px, rgba(31, 92, 72, 0.05) 24px); }
+    a { color: inherit; }
+    :focus-visible { outline: 3px solid rgba(230, 83, 47, 0.45); outline-offset: 3px; }
+    .shell { width: min(1240px, calc(100% - 40px)); margin: 0 auto; }
+    .site-header { position: sticky; top: 0; z-index: 30; border-bottom: 1px solid rgba(23, 32, 29, 0.15); background: rgba(244, 241, 233, 0.95); backdrop-filter: blur(14px); }
+    .nav { min-height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; font-weight: 700; }
+    .brand-mark { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; color: var(--paper-bright); background: var(--forest-dark); font: 600 20px "Newsreader", serif; }
+    .brand small { display: block; color: var(--muted); font: 400 10px "DM Mono", monospace; text-transform: uppercase; }
+    .nav-links { display: flex; align-items: center; gap: 26px; }
+    .nav-links a { color: var(--muted); font-size: 14px; font-weight: 600; text-decoration: none; }
+    .nav-links a:hover, .nav-links a.active { color: var(--forest-dark); }
+    .icon-link { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 50%; }
+    .icon-link svg { width: 18px; }
+    .page-head { padding: 64px 0 42px; border-bottom: 1px solid var(--line); }
+    .breadcrumb { margin-bottom: 18px; display: flex; align-items: center; gap: 8px; color: var(--muted); font: 500 11px "DM Mono", monospace; text-transform: uppercase; }
+    .breadcrumb a { text-decoration: none; }
+    .breadcrumb svg { width: 14px; }
+    .page-head h1 { max-width: 760px; margin: 0 0 18px; font: 600 clamp(48px, 7vw, 82px)/0.95 "Newsreader", serif; }
+    .page-head p { max-width: 700px; margin: 0; color: var(--muted); font-size: 17px; }
+    .workspace { padding: 40px 0 80px; display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 44px; align-items: start; }
+    .library { position: sticky; top: 98px; }
+    .library-label { margin: 0 0 13px; color: var(--signal); font: 500 11px "DM Mono", monospace; text-transform: uppercase; }
+    .library-card { width: 100%; margin-bottom: 10px; padding: 18px; display: block; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper-bright); text-decoration: none; }
+    .library-card.active { color: #fff; border-color: var(--forest-dark); background: var(--forest-dark); box-shadow: var(--shadow); }
+    .library-card small { display: block; margin-bottom: 8px; color: var(--muted); font: 500 10px "DM Mono", monospace; text-transform: uppercase; }
+    .library-card.active small { color: #b9d5ca; }
+    .library-card strong { display: block; font-size: 14px; line-height: 1.35; }
+    .library-card p { margin: 8px 0 0; color: var(--muted); font-size: 12px; }
+    .library-card.active p { color: #d9e6df; }
+    .library-card.upcoming { border-style: dashed; background: transparent; }
+    .source-link { margin-top: 18px; display: inline-flex; align-items: center; gap: 7px; color: var(--forest); font-size: 12px; font-weight: 700; text-decoration: none; }
+    .source-link svg { width: 15px; }
+    .article-shell { min-width: 0; padding: 42px clamp(24px, 5vw, 64px); border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper-bright); box-shadow: var(--shadow); }
+    .article-status { min-height: 120px; display: grid; place-items: center; color: var(--muted); font: 500 12px "DM Mono", monospace; text-align: center; }
+    .article-status.error { color: #9c3224; }
+    .article h1 { margin: 0 0 12px; font: 600 clamp(39px, 5vw, 62px)/1 "Newsreader", serif; }
+    .article h2 { margin: 58px 0 18px; padding-top: 18px; border-top: 1px solid var(--line); font: 600 35px/1.1 "Newsreader", serif; }
+    .article h3 { margin: 34px 0 12px; font-size: 20px; line-height: 1.3; }
+    .article p, .article li { color: #3f4b46; }
+    .article strong { color: var(--ink); }
+    .article a { color: var(--forest); }
+    .article code { padding: 2px 5px; border-radius: 3px; background: #e7ebe4; color: var(--forest-dark); font: 500 0.88em "DM Mono", monospace; }
+    .article pre { margin: 22px 0; padding: 20px; overflow-x: auto; border-left: 4px solid var(--signal); background: #17201d; color: #edf2ee; }
+    .article pre code { padding: 0; color: inherit; background: none; }
+    .article blockquote { margin: 24px 0; padding: 4px 0 4px 20px; border-left: 3px solid var(--forest); color: var(--muted); }
+    .article table { width: 100%; margin: 24px 0 36px; border-collapse: collapse; font-size: 12px; line-height: 1.45; }
+    .article th { background: var(--forest-dark); color: #fff; text-align: left; }
+    .article th, .article td { min-width: 135px; padding: 12px; border: 1px solid var(--line); vertical-align: top; }
+    .table-wrap { width: 100%; overflow-x: auto; }
+    .article ul, .article ol { padding-left: 24px; }
+    .article li { margin: 6px 0; }
+    .back-top { position: fixed; right: 22px; bottom: 22px; width: 42px; height: 42px; display: grid; place-items: center; border: 0; border-radius: 50%; background: var(--signal); color: #fff; box-shadow: var(--shadow); text-decoration: none; }
+    .back-top svg { width: 18px; }
+    footer { padding: 34px 0; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+    @media (max-width: 880px) {
+      .nav-links a:not(.active):not(.icon-link) { display: none; }
+      .workspace { grid-template-columns: 1fr; }
+      .library { position: static; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+      .library-label, .source-link { grid-column: 1 / -1; }
+      .library-card { margin: 0; }
+    }
+    @media (max-width: 600px) {
+      .shell { width: min(100% - 24px, 1240px); }
+      .brand > span:last-child { display: none; }
+      .page-head { padding-top: 44px; }
+      .page-head h1 { font-size: 48px; }
+      .workspace { padding-top: 24px; gap: 24px; }
+      .library { grid-template-columns: 1fr; }
+      .article-shell { padding: 28px 18px; }
+      .article h1 { font-size: 38px; }
+      .article h2 { margin-top: 44px; font-size: 30px; }
+    }
+  </style>
+</head>
+<body id="top">
+  <header class="site-header">
+    <nav class="shell nav" aria-label="Primary navigation">
+      <a class="brand" href="index.html"><span class="brand-mark">R</span><span>Ravi Singh <small>DevOps fieldbook</small></span></a>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a class="active" href="addins.html" aria-current="page">AddIns</a>
+        <a href="index.html#knowledge">Knowledge base</a>
+        <a class="icon-link" href="https://github.com/ravisingh-vm" target="_blank" rel="noreferrer" aria-label="Ravi Singh on GitHub" title="GitHub profile"><i data-lucide="github"></i></a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page-head">
+      <div class="shell">
+        <div class="breadcrumb"><a href="index.html">Fieldbook</a><i data-lucide="chevron-right"></i><span>AddIns</span></div>
+        <h1>AddIns engineering knowledge.</h1>
+        <p>Application strategy, delivery controls, migration lessons, and operational decisions collected in one reusable library.</p>
+      </div>
+    </section>
+
+    <div class="shell workspace">
+      <aside class="library" aria-label="AddIns knowledge articles">
+        <p class="library-label">Articles / 01 published</p>
+        <a class="library-card active" href="addins.html" aria-current="page">
+          <small>DevSecOps · Assessment</small>
+          <strong>Standards &amp; Best Practices</strong>
+          <p>Branching, tagging, promotion, rollback, and migration priorities.</p>
+        </a>
+        <div class="library-card upcoming">
+          <small>Coming next</small>
+          <strong>Anthos to Amazon ECS Migration</strong>
+          <p>A place for architecture choices, migration stages, and lessons learned.</p>
+        </div>
+        <a class="source-link" href="docs/addins-devsecops-assessment.md" target="_blank">Read Markdown source <i data-lucide="file-text"></i></a>
+      </aside>
+
+      <article class="article-shell">
+        <div class="article-status" id="article-status">Loading Standards &amp; Best Practices…</div>
+        <div class="article" id="article" hidden></div>
+      </article>
+    </div>
+  </main>
+
+  <a class="back-top" href="#top" aria-label="Back to top" title="Back to top"><i data-lucide="arrow-up"></i></a>
+  <footer><div class="shell">© <span id="year"></span> Ravi Kumar Singh · AddIns knowledge library.</div></footer>
+
+  <script>
+    window.addEventListener("DOMContentLoaded", async () => {
+      if (window.lucide) lucide.createIcons();
+      document.getElementById("year").textContent = new Date().getFullYear();
+      const article = document.getElementById("article");
+      const status = document.getElementById("article-status");
+
+      try {
+        const response = await fetch("docs/addins-devsecops-assessment.md");
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const markdown = await response.text();
+        if (!window.marked) throw new Error("Markdown renderer did not load");
+        article.innerHTML = marked.parse(markdown, { gfm: true });
+        article.querySelectorAll("table").forEach((table) => {
+          const wrapper = document.createElement("div");
+          wrapper.className = "table-wrap";
+          table.parentNode.insertBefore(wrapper, table);
+          wrapper.appendChild(table);
+        });
+        status.hidden = true;
+        article.hidden = false;
+      } catch (error) {
+        status.classList.add("error");
+        status.innerHTML = `The article could not be loaded. <a href="docs/addins-devsecops-assessment.md">Open the Markdown source</a>.`;
+      }
+    });
+  </script>
+</body>
+</html>
