@@ -15,6 +15,10 @@ The site currently includes:
 The `AddIns` tab is served by `addins.html`. Its first article is maintained in
 `docs/addins-devsecops-assessment.md` and rendered as a readable web page.
 
+The production ACA rollout and migration-team plan is maintained in
+`docs/aca-production-deployment-strategy.md` and is available through the
+`Zero-Downtime Deployment Strategy` article.
+
 Future application notes, such as the Anthos-to-Amazon-ECS migration, can be
 added under `docs/` and exposed as another article in the AddIns library.
 

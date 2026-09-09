@@ -126,22 +126,27 @@
 
     <div class="shell workspace">
       <aside class="library" aria-label="AddIns knowledge articles">
-        <p class="library-label">Articles / 01 published</p>
-        <a class="library-card active" href="addins.html" aria-current="page">
+        <p class="library-label">Articles / 02 published</p>
+        <a class="library-card" data-article="standards" href="addins.html">
           <small>DevSecOps · Assessment</small>
           <strong>Standards &amp; Best Practices</strong>
           <p>Branching, tagging, promotion, rollback, and migration priorities.</p>
+        </a>
+        <a class="library-card" data-article="aca-production" href="addins.html?article=aca-production">
+          <small>ACA · Production</small>
+          <strong>Zero-Downtime Deployment Strategy</strong>
+          <p>Blue-green rollout, warm rollback, ownership, and migration plan.</p>
         </a>
         <div class="library-card upcoming">
           <small>Coming next</small>
           <strong>Anthos to Amazon ECS Migration</strong>
           <p>A place for architecture choices, migration stages, and lessons learned.</p>
         </div>
-        <a class="source-link" href="docs/addins-devsecops-assessment.md" target="_blank">Read Markdown source <i data-lucide="file-text"></i></a>
+        <a class="source-link" id="source-link" href="docs/addins-devsecops-assessment.md" target="_blank">Read Markdown source <i data-lucide="file-text"></i></a>
       </aside>
 
       <article class="article-shell">
-        <div class="article-status" id="article-status">Loading Standards &amp; Best Practices…</div>
+        <div class="article-status" id="article-status">Loading article…</div>
         <div class="article" id="article" hidden></div>
       </article>
     </div>
@@ -156,9 +161,32 @@
       document.getElementById("year").textContent = new Date().getFullYear();
       const article = document.getElementById("article");
       const status = document.getElementById("article-status");
+      const sourceLink = document.getElementById("source-link");
+      const articles = {
+        standards: {
+          title: "Standards & Best Practices",
+          source: "docs/addins-devsecops-assessment.md"
+        },
+        "aca-production": {
+          title: "Zero-Downtime Deployment Strategy",
+          source: "docs/aca-production-deployment-strategy.md"
+        }
+      };
+      const requestedArticle = new URLSearchParams(window.location.search).get("article") || "standards";
+      const articleKey = Object.hasOwn(articles, requestedArticle) ? requestedArticle : "standards";
+      const selectedArticle = articles[articleKey];
+
+      document.querySelectorAll("[data-article]").forEach((link) => {
+        const isActive = link.dataset.article === articleKey;
+        link.classList.toggle("active", isActive);
+        if (isActive) link.setAttribute("aria-current", "page");
+      });
+      sourceLink.href = selectedArticle.source;
+      status.textContent = `Loading ${selectedArticle.title}…`;
+      document.title = `${selectedArticle.title} | Ravi Singh`;
 
       try {
-        const response = await fetch("docs/addins-devsecops-assessment.md");
+        const response = await fetch(selectedArticle.source);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const markdown = await response.text();
         if (!window.marked) throw new Error("Markdown renderer did not load");
@@ -173,7 +201,7 @@
         article.hidden = false;
       } catch (error) {
         status.classList.add("error");
-        status.innerHTML = `The article could not be loaded. <a href="docs/addins-devsecops-assessment.md">Open the Markdown source</a>.`;
+        status.innerHTML = `The article could not be loaded. <a href="${selectedArticle.source}">Open the Markdown source</a>.`;
       }
     });
   </script>
