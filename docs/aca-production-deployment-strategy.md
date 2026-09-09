@@ -79,6 +79,37 @@ The migration team must also confirm that the ACA environment and quota can run
 both blue and green revisions at the same time. During deployment, capacity can
 temporarily approach twice the normal minimum.
 
+### Cost Impact
+
+This strategy can increase ACA compute cost, but the increase depends on how
+long both revisions remain active and how many minimum replicas are configured.
+
+- Moving the normal production baseline from one minimum replica to two increases
+  the always-on replica cost.
+- During blue-green deployment, both old and new revisions run at the same time.
+  Compute usage can temporarily approach twice the normal production capacity.
+- Keeping the previous revision warm at 0% traffic still consumes compute when
+  it has minimum replicas assigned.
+- After the observation and rollback window, deactivating the old revision returns
+  usage to the new steady-state baseline.
+- Inactive ACA revisions do not consume running replica compute, but reactivating
+  one introduces cold-start time during rollback.
+
+Cost-balanced recommendation:
+
+1. Measure the current production CPU, memory, replica count, and startup time.
+2. Use two minimum replicas where the availability requirement justifies it.
+3. Keep both revisions warm only for a defined 30-to-60-minute observation window.
+4. Deactivate the previous revision after release acceptance while retaining its
+   immutable image and revision history.
+5. Confirm ACA quota and estimate the temporary overlap cost before production adoption.
+6. Review actual cost and utilization after the first three production releases.
+
+The trade-off is a controlled, temporary cost increase in exchange for no planned
+cutover downtime and rollback in seconds rather than waiting for a cold revision.
+The migration team should present the expected steady-state and deployment-window
+costs alongside the reliability benefit before final approval.
+
 ### Traffic Management
 
 The current Terraform module models one `latest_revision` traffic rule. Extend
